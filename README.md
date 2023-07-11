@@ -6,4 +6,4 @@
 
 [GridViz](https://github.com/eurostat/gridviz/) extension for Gaussian kernel density smoothing.
 
-See [here](https://eurostat.github.io/gridviz/docs/reference#kernel-smoothing).
+See [the documentation](https://eurostat.github.io/gridviz/docs/reference#kernel-smoothing).
