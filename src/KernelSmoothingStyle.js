@@ -1,7 +1,7 @@
 //@ts-check
 'use strict'
 
-import { Style } from '../Style.js'
+import { Style } from 'gridviz'
 import { density2d } from 'fast-kde'
 
 /**
@@ -21,7 +21,7 @@ export class KernelSmoothingStyle extends Style {
         opts = opts || {}
 
         /** A function returning the value to consider for each cell. This is the value to be smoothed.
-         * @type {function(import("../Dataset").Cell):number} */
+         */
         this.value = opts.value
 
         /** The smoothing parameter, in geo unit. The larger, the more smoothed.
@@ -57,9 +57,9 @@ export class KernelSmoothingStyle extends Style {
     /**
      * Draw the smoothed cells depending on the list of styles specified.
      *
-     * @param {Array.<import("../Dataset").Cell>} cells
+     * @param {object} cells
      * @param {number} r
-     * @param {import("../GeoCanvas").GeoCanvas} cg
+     * @param {object} cg
      */
     draw(cells, r, cg) {
         //filter
