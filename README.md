@@ -4,6 +4,6 @@
 ![npm](https://img.shields.io/npm/v/gridviz-smoothing)
 ![license](https://img.shields.io/badge/license-EUPL-success)
 
-[GridViz](https://github.com/eurostat/gridviz/) extension for Gaussian kernel density smoothing.
+Gaussian kernel density smoothing for [GridViz](https://github.com/eurostat/gridviz/).
 
 See [the documentation](https://eurostat.github.io/gridviz/docs/reference#kernel-smoothing).

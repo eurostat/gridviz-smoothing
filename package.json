@@ -1,7 +1,7 @@
 {
     "name": "gridviz-smoothing",
-    "version": "0.0.9",
-    "description": "",
+    "version": "1.0.0",
+    "description": "Gaussian kernel density smoothing for GridViz",
     "keywords": [],
     "homepage": "https://github.com/eurostat/gridviz-smoothing",
     "author": "Joseph Davies, Julien Gaffuri",
