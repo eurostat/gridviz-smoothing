@@ -4,8 +4,8 @@ const LiveReloadPlugin = require('webpack-livereload-plugin')
 module.exports = {
     mode: 'development',
     output: {
-        filename: 'gridviz.js',
-        library: 'gviz',
+        filename: 'gridviz-smoothing.js',
+        library: 'gviz_sm',
         libraryTarget: 'umd',
     },
     plugins: [new LiveReloadPlugin()],

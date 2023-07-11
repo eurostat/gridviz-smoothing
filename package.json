@@ -1,37 +1,24 @@
 {
-    "name": "gridviz",
-    "version": "2.0.39",
-    "description": "Visualization tool for gridded statistics",
-    "keywords": [
-        "statistics",
-        "grid",
-        "gridded",
-        "grids",
-        "gridded statistics",
-        "dataviz",
-        "csv",
-        "GIS",
-        "WebGL",
-        "d3",
-        "cartography",
-        "bertin"
-    ],
-    "homepage": "https://github.com/eurostat/gridviz",
+    "name": "gridviz-smoothing",
+    "version": "0.0.9",
+    "description": "",
+    "keywords": [],
+    "homepage": "https://github.com/eurostat/gridviz-smoothing",
     "author": "Joseph Davies, Julien Gaffuri",
     "license": "EUPL-1.2",
     "repository": {
         "type": "git",
-        "url": "https://github.com/eurostat/gridviz.git"
+        "url": "https://github.com/eurostat/gridviz-smoothing.git"
     },
     "bugs": {
-        "url": "https://github.com/eurostat/gridviz/issues",
+        "url": "https://github.com/eurostat/gridviz-smoothing/issues",
         "email": "Joseph.DAVIES@ext.ec.europa.eu"
     },
     "type": "module",
-    "main": "dist/gridviz.min.js",
-    "module": "dist/gridviz.min.js",
+    "main": "dist/gridviz-smoothing.min.js",
+    "module": "dist/gridviz-smoothing.min.js",
     "exports": {
-        "umd": "./dist/gridviz.min.js",
+        "umd": "./dist/gridviz-smoothing.min.js",
         "default": "./src/index.js"
     },
     "scripts": {
