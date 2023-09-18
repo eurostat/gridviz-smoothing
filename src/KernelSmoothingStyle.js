@@ -62,6 +62,7 @@ export class KernelSmoothingStyle extends Style {
      * @param {object} cg
      */
     draw(cells, r, cg) {
+
         //filter
         if (this.filter) cells = cells.filter(this.filter)
 
