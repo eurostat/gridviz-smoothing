@@ -107,7 +107,12 @@ export class KernelSmoothingStyle extends Style {
         }
 
         //draw smoothed cells from styles
-        for (let s of this.styles) s.draw(cells, resSmoothed, cg)
+        for (let s of this.styles) {
+            cg.ctx.globalAlpha = s.alpha ? s.alpha(cg.zf) : 1.0
+            cg.ctx.globalCompositeOperation = s.blendOperation(cg.zf)
+
+            s.draw(cells, resSmoothed, cg)
+        }
 
         //update legends
         //for (let s of this.styles)
