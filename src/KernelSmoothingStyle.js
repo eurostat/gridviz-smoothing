@@ -54,8 +54,6 @@ export class KernelSmoothingStyle extends Style {
         this.styles = opts.styles || []
     }
 
-
-
     /**
       * Draw the smoothed cells depending on the list of styles specified.
       * @param {Array.<Cell>} cells
@@ -64,7 +62,6 @@ export class KernelSmoothingStyle extends Style {
       * @override
       */
     draw(cells, geoCanvas, resolution) {
-
 
         //filter
         if (this.filter) cells = cells.filter(this.filter)
