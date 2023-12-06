@@ -1,10 +1,11 @@
 <div>
-    <input type="range" min="0.001" max="30" value="1" class="slider" id="sigma" style="width: 400px" />
+    <input type="range" min="0.001" max="30" value="10" class="slider" id="sigma" style="width: 400px" />
 </div>
 <div id="map" style="height: 500px; width: 800px"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/gridviz@3.0.0"></script>
 <script src="../dist/gridviz-smoothing.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-color@3"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-interpolate@3"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-scale-chromatic@3"></script>
@@ -23,11 +24,12 @@
             value: (cell) => +cell.value,
             sigma: (resolution) => (resolution * 10) / 10,
             factor: 30,
-            filterSm: (v) => v > 0.0005,
+            filterSmoothed: (value) => value > 0.0005,
             styles:
                 [
                     new gridviz.ShapeColorSizeStyle({
-                        color: (cell) => d3.interpolateSpectral(1 - cell.ksmval / 10),
+                        color: (cell, resolution, z, max) => d3.interpolateSpectral(1 - cell.ksmval / max),
+                        viewScale: (cells) => d3.max(cells, cell => cell.ksmval)
                     }),
                     new gridviz.TextStyle({
                         text: (cell) => Math.floor(1000 * cell.ksmval) / 1000,

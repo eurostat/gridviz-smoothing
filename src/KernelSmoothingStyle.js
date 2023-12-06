@@ -41,12 +41,12 @@ export class KernelSmoothingStyle extends Style {
          *  Return true to keep the cell, false otherwise.
          * @type { function(number):boolean }
          */
-        this.filterSm = opts.filterSm
+        this.filterSmoothed = opts.filterSmoothed
 
-        /** The name of the attribute where the smoothed value is stored in the output smoothed grid.
+        /** The name of the cell property where the smoothed value is stored in the output smoothed grid.
          * @type { string }
          */
-        this.sCol = opts.sCol || 'ksmval'
+        this.smoothedProperty = opts.smoothedProperty || 'ksmval'
 
         /** The styles to represent the smoothed grid.
          * @type {Array.<Style>}
@@ -68,11 +68,15 @@ export class KernelSmoothingStyle extends Style {
 
         if (!cells || cells.length == 0) return
 
+        //
+        const z = geoCanvas.view.z
+
         //get smoothing param in geo unit
         /** @type {number} */
-        const sG = this.sigma(resolution, geoCanvas.zf)
+        const sG = this.sigma(resolution, z)
 
         //compute smoothed grid dimensions
+        //TODO ceil ? why not floor ?
         const nbX = Math.ceil(geoCanvas.w / this.factor)
         const nbY = Math.ceil(geoCanvas.h / this.factor)
         //compute smoothed grid geo extent
@@ -98,20 +102,20 @@ export class KernelSmoothingStyle extends Style {
         cells = []
         for (let ind = 0; ind < g.length; ind++) {
             const v = g[ind]
-            if (this.filterSm && !this.filterSm(v)) continue
+            if (this.filterSmoothed && !this.filterSmoothed(v)) continue
             const row = Math.floor(ind / nbX)
             const col = ind % nbX
             const c = { x: e_[0][0] + col * resSmoothed, y: e_[1][0] + row * resSmoothed }
-            c[this.sCol] = v
+            c[this.smoothedProperty] = v
             cells.push(c)
         }
 
         //draw smoothed cells from styles
         for (let s of this.styles) {
-            geoCanvas.ctx.globalAlpha = s.alpha ? s.alpha(geoCanvas.zf) : 1.0
-            geoCanvas.ctx.globalCompositeOperation = s.blendOperation(geoCanvas.zf)
+            geoCanvas.ctx.globalAlpha = s.alpha ? s.alpha(z) : 1.0
+            geoCanvas.ctx.globalCompositeOperation = s.blendOperation(z)
 
-            s.draw(cells, resSmoothed, geoCanvas)
+            s.draw(cells, geoCanvas, resSmoothed)
         }
 
         //update legends
