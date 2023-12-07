@@ -5,7 +5,7 @@ module.exports = {
     mode: 'development',
     output: {
         filename: 'gridviz-smoothing.js',
-        library: 'gviz_sm',
+        library: 'gridviz_smoothing',
         libraryTarget: 'umd',
     },
     plugins: [new LiveReloadPlugin()],

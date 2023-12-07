@@ -2,7 +2,7 @@ module.exports = {
     mode: 'production',
     output: {
         filename: 'gridviz-smoothing.min.js',
-        library: 'gviz_sm',
+        library: 'gridviz_smoothing',
         libraryTarget: 'umd',
     },
     module: {
