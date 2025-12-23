@@ -6,4 +6,8 @@
 
 Gaussian kernel density smoothing for [GridViz](https://github.com/eurostat/gridviz/).
 
+Examples:
+- [test](https://eurostat.github.io/gridviz-smoothing/example/kernelsmoothing_small.html)
+- [elevation](https://eurostat.github.io/gridviz-smoothing/example/elevation.html)
+
 See [the documentation](https://eurostat.github.io/gridviz/docs/reference#kernel-smoothing).
