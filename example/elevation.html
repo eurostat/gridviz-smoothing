@@ -1,5 +1,5 @@
 <div>
-    <input type="range" min="0.001" max="30" value="10" class="slider" id="sigma" style="width: 400px" />
+    <input type="range" min="6" max="20" value="10" class="slider" id="sigma" style="width: 400px" />
 </div>
 <div id="map" style="height: 500px; width: 800px"></div>
 
@@ -11,8 +11,6 @@
 <script src="https://cdn.jsdelivr.net/npm/d3-interpolate@3"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-scale-chromatic@3"></script>
 <script>
-
-    const colorRamp = (t) => d3.interpolateRdYlGn(0.95 - t * 0.9)
 
     const map = new gridviz.Map(document.getElementById('map'), {
         x: 4200000, y: 2800000, z: 1000,
@@ -26,35 +24,92 @@
     )
 
     //define style
-    const style =
+    const classNumber = 12
+    const colors = []
+    const colorRamp = (t) => d3.interpolateRdYlGn(0.95 - t * 0.9)
+    for (let i = 0; i <= (classNumber - 1); i++) colors.push(colorRamp(i / (classNumber - 1)))
+
+    const styleHypso2 = new gridviz.ShapeColorSizeStyle({
+        //color: (cell, resolution, z, max) => d3.interpolateRdYlGn(1 - cell.v / max),
+        color: (cell, resolution, z, vs) => colors[ vs(cell.v) ],
+        //viewScale: (cells) => d3.max(cells, cell => cell.v),
+        viewScale: cells => {
+            [min, max] = d3.extent(cells, c => c.v)
+            const min_ = min < 0 ? 0 : min
+            const breaks = []
+            for (let i = 1; i < classNumber; i++) {
+                let t = i / classNumber
+                //t = scaleRelief(t)
+                breaks.push(min_ + (max - min_) * t)
+            }
+            //console.log(min,max)
+            return gridviz.classifier(breaks)
+        },
+        size: (c, r, z) => r + z
+    })
+
+    const styleHypso = new gridviz.SquareColorCategoryWebGLStyle({
+        viewScale: cells => {
+            [min, max] = d3.extent(cells, c => c.v)
+            const min_ = min < 0 ? 0 : min
+            const breaks = []
+            for (let i = 1; i < classNumber; i++) {
+                let t = i / classNumber
+                //t = scaleRelief(t)
+                breaks.push(min_ + (max - min_) * t)
+            }
+            //console.log(min,max)
+            return gridviz.classifier(breaks)
+        },
+        code: (c, r, z, classifier) => classifier(c.v),
+        color: { ...colors },
+    })
+
+    const styleTanaka = new gridviz.SideTanakaStyle({
+        classifier: cells => {
+            // return a function which for each cell returns its class number
+            [min, max] = d3.extent(cells, c => c.v)
+            const min_ = min < 0 ? 0 : min
+            const breaks = []
+            for (let i = 1; i < classNumber; i++) {
+                let t = i / classNumber
+                //t = scaleRelief(t)
+                breaks.push(min_ + (max - min_) * t)
+            }
+            const cs = gridviz.classifier(breaks)
+            return c => cs(c.v)
+        },
+        //width: (c, r, z) => z,
+        diamond: false,
+    })
+
+    const styleShading = new gridviz.ShadingStyle({ elevation: 'v', })
+
+    const styleSmoothed =
         new gridviz_smoothing.KernelSmoothingStyle({
             value: (cell) => +cell.v,
             smoothedProperty: "v",
-            sigma: (resolution) => (resolution * 10) / 10,
-            factor: 1,
+            sigma: (r, z) => (r * 10) / 10,
+            //factor: 1,
+            resolutionSmoothed: (r, z) => Math.round(r / 4),
             filterSmoothed: (value) => value > 0.0005,
             styles:
                 [
-                    new gridviz.ShapeColorSizeStyle({
-                        color: (cell, resolution, z, max) => d3.interpolateSpectral(1 - cell.v / max),
-                        viewScale: (cells) => d3.max(cells, cell => cell.v)
-                    }),
-                    /*new gridviz.TextStyle({
-                        text: (cell) => Math.floor(1000 * cell.ksmval) / 1000,
-                        color: () => 'black',
-                        fontSize: (cell, r) => r * 0.3,
-                    }),*/
+                    styleHypso2,
+                    styleTanaka,
+                    styleShading,
                 ],
         })
 
 
     //add layer to map
-    map.layers = [new gridviz.GridLayer(dataset, [style])]
+    map.layers = [new gridviz.GridLayer(dataset, [styleSmoothed], { minPixelsPerCell: 3 })]
 
     //sigma selection
     document.getElementById('sigma').oninput = function () {
         //set sigma
         map.layers[0].styles[0].sigma = (r, zf) => (r * +this.value) / 10
+        map.layers[0].styles[0].styles[0].cellsNb = -1
         //redraw
         map.redraw()
     }
