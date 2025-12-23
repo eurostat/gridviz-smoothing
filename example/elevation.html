@@ -12,17 +12,11 @@
 <script src="https://cdn.jsdelivr.net/npm/d3-scale-chromatic@3"></script>
 <script>
 
-    const seaColor = "#a4c8e1"
-    const seaColorT = seaColor + "bb"
     const colorRamp = (t) => d3.interpolateRdYlGn(0.95 - t * 0.9)
 
     const map = new gridviz.Map(document.getElementById('map'), {
         x: 4200000, y: 2800000, z: 1000,
-        backgroundColor: seaColor
-    })
-        .setZoomExtent([10, 5000])
-        .addZoomButtons()
-        .setViewFromURL()
+    }).addZoomButtons()
 
     const dataset = new gridviz.MultiResolutionDataset(
         [100, 200, 500, 1000, 2000, 5000, 10000, 20000],
@@ -35,14 +29,15 @@
     const style =
         new gridviz_smoothing.KernelSmoothingStyle({
             value: (cell) => +cell.v,
+            smoothedProperty: "v",
             sigma: (resolution) => (resolution * 10) / 10,
             factor: 1,
             filterSmoothed: (value) => value > 0.0005,
             styles:
                 [
                     new gridviz.ShapeColorSizeStyle({
-                        color: (cell, resolution, z, max) => d3.interpolateSpectral(1 - cell.ksmval / max),
-                        viewScale: (cells) => d3.max(cells, cell => cell.ksmval)
+                        color: (cell, resolution, z, max) => d3.interpolateSpectral(1 - cell.v / max),
+                        viewScale: (cells) => d3.max(cells, cell => cell.v)
                     }),
                     /*new gridviz.TextStyle({
                         text: (cell) => Math.floor(1000 * cell.ksmval) / 1000,
