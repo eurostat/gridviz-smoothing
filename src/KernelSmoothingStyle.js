@@ -36,12 +36,12 @@ export class KernelSmoothingStyle extends Style {
          * The higher, the more pixelised and the faster to compute.
          * @type { number }
          */
-        //this.factor = opts.factor || 2
+        this.factor = opts.factor || 2
 
         /**
          * The resolution of the smoothed grid.
          */
-        this.resolutionSmoothed = opts.resolutionSmoothed || ((r, z) => r)
+        //this.resolutionSmoothed = opts.resolutionSmoothed || ((r, z) => r)
 
         /** A filter function to filter the smoothed cells based on their smoothed value.
          *  Return true to keep the cell, false otherwise.
@@ -83,27 +83,26 @@ export class KernelSmoothingStyle extends Style {
 
         //get resolution of the smoothed grid
         /** @type {number} */
-        const resSmoothed = this.resolutionSmoothed(resolution, z)
-
-        //console.log(resSmoothed, resolution)
+        const resSmoothed = this.factor * z //this.resolutionSmoothed(resolution, z)
 
         //get min max x,y
-        const [minx, maxx] = extent(cells, c => c.x)
-        const [miny, maxy] = extent(cells, c => c.y)
+        const ext = geoCanvas.extGeo
+        //const [minx, maxx] = extent(cells, c => c.x)
+        //const [miny, maxy] = extent(cells, c => c.y)
 
         //compute smoothed grid dimensions
         //TODO ceil ? why not floor ?
         //const nbX = Math.ceil(geoCanvas.w / this.factor)
         //const nbY = Math.ceil(geoCanvas.h / this.factor)
-        const nbX = Math.ceil((maxx - minx) / resSmoothed)
-        const nbY = Math.ceil((maxy - miny) / resSmoothed)
+        const nbX = Math.ceil((ext.xMax - ext.xMin) / resSmoothed)
+        const nbY = Math.ceil((ext.yMax - ext.yMin) / resSmoothed)
 
         //compute smoothed grid geo extent
         const e_ = [
             //[geoCanvas.pixToGeoX(0), geoCanvas.pixToGeoX(nbX * this.factor)],
-            [minx, minx + nbX * resSmoothed],
+            [ext.xMin, ext.xMin + nbX * resSmoothed],
             //[geoCanvas.pixToGeoY(nbY * this.factor), geoCanvas.pixToGeoY(0)],
-            [miny, miny + nbY * resSmoothed],
+            [ext.yMin, ext.yMin + nbY * resSmoothed],
         ]
 
         //compute smoothed grid
@@ -127,8 +126,8 @@ export class KernelSmoothingStyle extends Style {
             if (this.filterSmoothed && !this.filterSmoothed(v)) continue
             const row = Math.floor(ind / nbX)
             const col = ind % nbX
-            const x = e_[0][0] + col * resSmoothed
-            const y = e_[1][0] + row * resSmoothed
+            const x = ext.xMin + col * resSmoothed
+            const y = ext.yMin + row * resSmoothed
             const c = { x: x, y: y }
             c[this.smoothedProperty] = v
             cells.push(c)

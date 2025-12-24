@@ -4,7 +4,7 @@
 <div id="map" style="height: 500px; width: 800px"></div>
 
 <script src="../dist/gridviz-smoothing.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gridviz@3.0.31"></script>
+<script src="https://cdn.jsdelivr.net/npm/gridviz@3.0.32"></script>
 <script src="https://cdn.jsdelivr.net/npm/gridviz-parquet@1.1.1"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-color@3"></script>
@@ -89,8 +89,8 @@
             value: (cell) => +cell.v,
             smoothedProperty: "v",
             sigma: (r, z) => (r * +document.getElementById('sigma').value) / 10,
-            //factor: 1,
-            resolutionSmoothed: (r, z) => Math.round(r / 2),
+            factor: 2,
+            //resolutionSmoothed: (r, z) => Math.round(r / 2),
             filterSmoothed: (value) => value > 0.0005,
             styles:
                 [
