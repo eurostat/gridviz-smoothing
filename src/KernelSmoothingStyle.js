@@ -41,7 +41,7 @@ export class KernelSmoothingStyle extends Style {
         /**
          * The resolution of the smoothed grid.
          */
-        this.resolutionSmoothed = opts.resolutionSmoothed || ((r, z) => r / 2)
+        this.resolutionSmoothed = opts.resolutionSmoothed || ((r, z) => r)
 
         /** A filter function to filter the smoothed cells based on their smoothed value.
          *  Return true to keep the cell, false otherwise.
@@ -83,7 +83,9 @@ export class KernelSmoothingStyle extends Style {
 
         //get resolution of the smoothed grid
         /** @type {number} */
-        const rs = this.resolutionSmoothed(resolution, z)
+        const resSmoothed = this.resolutionSmoothed(resolution, z)
+
+        //console.log(resSmoothed, resolution)
 
         //get min max x,y
         const [minx, maxx] = extent(cells, c => c.x)
@@ -93,15 +95,15 @@ export class KernelSmoothingStyle extends Style {
         //TODO ceil ? why not floor ?
         //const nbX = Math.ceil(geoCanvas.w / this.factor)
         //const nbY = Math.ceil(geoCanvas.h / this.factor)
-        const nbX = Math.ceil((maxx - minx) / rs)
-        const nbY = Math.ceil((maxy - miny) / rs)
+        const nbX = Math.ceil((maxx - minx) / resSmoothed)
+        const nbY = Math.ceil((maxy - miny) / resSmoothed)
 
         //compute smoothed grid geo extent
         const e_ = [
             //[geoCanvas.pixToGeoX(0), geoCanvas.pixToGeoX(nbX * this.factor)],
-            [minx, minx + nbX * rs],
+            [minx, minx + nbX * resSmoothed],
             //[geoCanvas.pixToGeoY(nbY * this.factor), geoCanvas.pixToGeoY(0)],
-            [miny, miny + nbY * rs],
+            [miny, miny + nbY * resSmoothed],
         ]
 
         //compute smoothed grid
@@ -117,7 +119,6 @@ export class KernelSmoothingStyle extends Style {
         //compute the resolution of the smoothed grid
         //const resSmoothed = (e_[0][1] - e_[0][0]) / nbX
         //const resSmoothed = z * this.factor
-        const resSmoothed = rs
 
         //make smoothed cells
         cells = []
@@ -135,13 +136,27 @@ export class KernelSmoothingStyle extends Style {
 
         //draw smoothed cells from styles
         for (let s of this.styles) {
-            geoCanvas.ctx.globalAlpha = s.alpha ? s.alpha(z) : 1.0
-            geoCanvas.ctx.globalCompositeOperation = s.blendOperation(z)
 
+            //check if style is visible
+            if (s.visible && !s.visible(z)) continue
+
+            //set style alpha and blend mode
+            //TODO: multiply by layer alpha ?
+            geoCanvas.ctx.globalAlpha = s.alpha ? s.alpha(z) : 1.0
+            if (s.blendOperation) geoCanvas.ctx.globalCompositeOperation = s.blendOperation(z)
+
+            //set affin transform to draw with geographical coordinates
+            geoCanvas.setCanvasTransform()
+
+            //draw with style
             s.draw(cells, geoCanvas, resSmoothed)
+
+            //draw style filter
+            if (s.filterColor) s.drawFilter(geoCanvas)
         }
 
         //update legends
+        //TODO
         //for (let s of this.styles)
         //    s.updateLegends({ style: s, r: r, zf: cg.getZf() });
     }

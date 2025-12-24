@@ -12,10 +12,10 @@
 <script>
 
     //define map with initial view
-    const map = new gridviz.Map(document.getElementById('map'), { x: 0, y: 0, z: 0.02 })
+    const map = new gridviz.Map(document.getElementById('map'), { x: 50, y: 50, z: 0.01 })
 
     //define dataset
-    const dataset = new gridviz.CSVGrid(map, "https://raw.githubusercontent.com/jgaffuri/tiledgrids/master/data/test/single.csv", 1)
+    const dataset = new gridviz.CSVGrid(map, "https://raw.githubusercontent.com/jgaffuri/tiledgrids/master/data/test/single.csv", 100)
     //"https://raw.githubusercontent.com/jgaffuri/tiledgrids/master/data/test/small.csv",
 
     //define style
@@ -23,7 +23,7 @@
         new gridviz_smoothing.KernelSmoothingStyle({
             value: (cell) => +cell.value,
             sigma: (resolution) => (resolution * 10) / 10,
-            factor: 30,
+            resolutionSmoothed: (r, z) => 50,
             filterSmoothed: (value) => value > 0.0005,
             styles:
                 [

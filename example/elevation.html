@@ -58,7 +58,6 @@
                 //t = scaleRelief(t)
                 breaks.push(min_ + (max - min_) * t)
             }
-            //console.log(min,max)
             return gridviz.classifier(breaks)
         },
         code: (c, r, z, classifier) => classifier(c.v),
@@ -89,13 +88,13 @@
         new gridviz_smoothing.KernelSmoothingStyle({
             value: (cell) => +cell.v,
             smoothedProperty: "v",
-            sigma: (r, z) => (r * 10) / 10,
+            sigma: (r, z) => (r * +document.getElementById('sigma').value) / 10,
             //factor: 1,
-            resolutionSmoothed: (r, z) => Math.round(r / 4),
+            resolutionSmoothed: (r, z) => Math.round(r / 2),
             filterSmoothed: (value) => value > 0.0005,
             styles:
                 [
-                    styleHypso2,
+                    styleHypso,
                     styleTanaka,
                     styleShading,
                 ],
@@ -108,7 +107,7 @@
     //sigma selection
     document.getElementById('sigma').oninput = function () {
         //set sigma
-        map.layers[0].styles[0].sigma = (r, zf) => (r * +this.value) / 10
+        map.layers[0].styles[0].sigma = (r, z) => (r * +this.value) / 10
         map.layers[0].styles[0].styles[0].cellsNb = -1
         //redraw
         map.redraw()
