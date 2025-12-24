@@ -89,7 +89,7 @@
             value: (cell) => +cell.v,
             smoothedProperty: "v",
             sigma: (r, z) => (r * +document.getElementById('sigma').value) / 10,
-            factor: 2,
+            factor: 3,
             //resolutionSmoothed: (r, z) => Math.round(r / 2),
             filterSmoothed: (value) => value > 0.0005,
             styles:
