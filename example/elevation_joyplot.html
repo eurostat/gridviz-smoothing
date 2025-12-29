@@ -1,0 +1,57 @@
+<div>
+    <input type="range" min="6" max="20" value="10" class="slider" id="sigma" style="width: 400px" />
+</div>
+<div id="map" style="height: 500px; width: 800px"></div>
+
+<script src="../dist/gridviz-smoothing.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gridviz@3.0.32"></script>
+<script src="https://cdn.jsdelivr.net/npm/gridviz-parquet@1.1.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-color@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-interpolate@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-scale-chromatic@3"></script>
+<script>
+
+    const map = new gridviz.Map(document.getElementById('map'), {
+        x: 4200000, y: 2800000, z: 4000,
+    }).addZoomButtons()
+
+    const dataset = new gridviz.MultiResolutionDataset(
+        [100, 200, 500, 1000, 2000, 5000, 10000, 20000],
+        resolution => new gviz_par.TiledParquetGrid(map,
+            "https://raw.githubusercontent.com/jgaffuri/tiled-euroDEM/main/pub/v1/tiles_" + resolution + "/"),
+        { preprocess: (c) => c.v != undefined && c.v != 0 }
+    )
+
+    const style = new gridviz.JoyPlotStyle({
+        viewScale: cells => d3.max(cells, c => c.v),
+        height: (c, r, z, max) => 10 * r * c.v / max,
+        lineColor: (y, ys, r, z) => "black",//"#b58500",
+        lineWidth: (y, ys, r, z) => z,
+        fillColor: (y, ys, r, z) => "white"
+    })
+
+    const styleSmoothed =
+        new gridviz_smoothing.KernelSmoothingStyle({
+            value: (cell) => +cell.v,
+            smoothedProperty: "v",
+            sigma: (r, z) => (r * +document.getElementById('sigma').value) / 10,
+            resolutionSmoothed: (resolution, z) => resolution,
+            trimFunction: v => Math.round(v * 1000) / 1000, //+(+v).toFixed(3),
+            filterSmoothed: (value) => value > 0.0005,
+            styles: [style],
+        })
+
+    //add layer to map
+    map.layers = [new gridviz.GridLayer(dataset, [styleSmoothed], { minPixelsPerCell: 4 })]
+
+    //sigma selection
+    document.getElementById('sigma').oninput = function () {
+        //set sigma
+        map.layers[0].styles[0].sigma = (r, z) => (r * +this.value) / 10
+        map.layers[0].styles[0].styles[0].cellsNb = -1
+        //redraw
+        map.redraw()
+    }
+
+</script>
