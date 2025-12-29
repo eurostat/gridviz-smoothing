@@ -12,4 +12,3 @@ Examples:
 - [elevation joyplot](https://eurostat.github.io/gridviz-smoothing/example/elevation_joyplot.html)
 
 See [the documentation](https://eurostat.github.io/gridviz/docs/reference#kernel-smoothing).
-

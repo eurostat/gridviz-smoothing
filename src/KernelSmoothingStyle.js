@@ -108,8 +108,6 @@ export class KernelSmoothingStyle extends Style {
             extent: [[xMin, xMin + nbX * resSmoothed], [yMin, yMin + nbY * resSmoothed]],
         }).grid()
 
-        console.log(nbX, nbY)
-
         //make smoothed cells
         cells = []
         for (let ind = 0; ind < g.length; ind++) {
