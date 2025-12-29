@@ -23,7 +23,7 @@
         new gridviz_smoothing.KernelSmoothingStyle({
             value: (cell) => +cell.value,
             sigma: (resolution) => (resolution * 10) / 10,
-            factor: 30,
+            resolutionSmoothed: (resolution, z) => 30 * z,
             filterSmoothed: (value) => value > 0.0005,
             styles:
                 [

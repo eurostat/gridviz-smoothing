@@ -29,25 +29,6 @@
     const colorRamp = (t) => d3.interpolateRdYlGn(0.95 - t * 0.9)
     for (let i = 0; i <= (classNumber - 1); i++) colors.push(colorRamp(i / (classNumber - 1)))
 
-    const styleHypso2 = new gridviz.ShapeColorSizeStyle({
-        //color: (cell, resolution, z, max) => d3.interpolateRdYlGn(1 - cell.v / max),
-        color: (cell, resolution, z, vs) => colors[ vs(cell.v) ],
-        //viewScale: (cells) => d3.max(cells, cell => cell.v),
-        viewScale: cells => {
-            [min, max] = d3.extent(cells, c => c.v)
-            const min_ = min < 0 ? 0 : min
-            const breaks = []
-            for (let i = 1; i < classNumber; i++) {
-                let t = i / classNumber
-                //t = scaleRelief(t)
-                breaks.push(min_ + (max - min_) * t)
-            }
-            //console.log(min,max)
-            return gridviz.classifier(breaks)
-        },
-        size: (c, r, z) => r + z
-    })
-
     const styleHypso = new gridviz.SquareColorCategoryWebGLStyle({
         viewScale: cells => {
             [min, max] = d3.extent(cells, c => c.v)
@@ -55,7 +36,6 @@
             const breaks = []
             for (let i = 1; i < classNumber; i++) {
                 let t = i / classNumber
-                //t = scaleRelief(t)
                 breaks.push(min_ + (max - min_) * t)
             }
             return gridviz.classifier(breaks)
@@ -89,8 +69,7 @@
             value: (cell) => +cell.v,
             smoothedProperty: "v",
             sigma: (r, z) => (r * +document.getElementById('sigma').value) / 10,
-            factor: 3,
-            //resolutionSmoothed: (r, z) => Math.round(r / 2),
+            resolutionSmoothed: (resolution, z) => z*2,
             filterSmoothed: (value) => value > 0.0005,
             styles:
                 [
