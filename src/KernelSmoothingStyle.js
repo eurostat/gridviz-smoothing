@@ -124,6 +124,7 @@ export class KernelSmoothingStyle extends Style {
         }
 
         //draw smoothed cells from styles
+        const ctx = geoCanvas.offscreenCtx
         for (let s of this.styles) {
 
             //check if style is visible
@@ -131,8 +132,11 @@ export class KernelSmoothingStyle extends Style {
 
             //set style alpha and blend mode
             //TODO: multiply by layer alpha ?
-            geoCanvas.ctx.globalAlpha = s.alpha ? s.alpha(z) : 1.0
-            if (s.blendOperation) geoCanvas.ctx.globalCompositeOperation = s.blendOperation(z)
+            if (s.alpha || s.blendOperation) {
+                ctx.save()
+                if (s.alpha) ctx.globalAlpha = s.alpha(z)
+                if (s.blendOperation) ctx.globalCompositeOperation = s.blendOperation(z)
+            }
 
             //set affin transform to draw with geographical coordinates
             geoCanvas.setCanvasTransform()
@@ -142,6 +146,9 @@ export class KernelSmoothingStyle extends Style {
 
             //draw style filter
             if (s.filterColor) s.drawFilter(geoCanvas)
+
+            //restore ctx
+            if (s.alpha || s.blendOperation) ctx.restore()
         }
 
         //update legends
